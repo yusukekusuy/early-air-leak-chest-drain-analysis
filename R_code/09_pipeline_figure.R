@@ -1,9 +1,17 @@
 ## 09_pipeline_figure.R  Figure 2: end-to-end pipeline (with conceptual stage icons)
+## ---- portable paths (GitHub-ready; NO absolute paths, NO patient data in repo) ----
+## Run this script from the R_code/ directory (e.g. `Rscript 02_analysis.R`).
+## Patient-level data are NOT distributed. To regenerate the .rds files locally,
+## place the source spreadsheet at ./data/データ.xlsx ; both ./data/ and
+## ./figures/ are git-ignored so no patient-level data can be committed.
+data_dir <- "data"; fig_dir <- "figures"
+dir.create(data_dir, showWarnings = FALSE, recursive = TRUE)
+dir.create(fig_dir,  showWarnings = FALSE, recursive = TRUE)
 ## records -> GPT structures free text -> LiNGAM causal discovery (DAG) ->
 ##   physician-curated risk model -> stratified bedside score
 ## Emphasis: AI is used TWICE -- (1) LLM structures free-text data, (2) layered LiNGAM causal discovery.
 suppressMessages({library(ggplot2); library(grid)})
-outdir <- "C:/Users/Owner/Desktop/LiNGAM解析/figures"
+outdir <- fig_dir
 
 ## Okabe-Ito palette
 grey <- "#666666"; ai <- "#E69F00"; blue <- "#0072B2"; green <- "#009E73"; verm <- "#D55E00"

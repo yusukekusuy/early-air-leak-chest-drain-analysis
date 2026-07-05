@@ -1,7 +1,15 @@
 ## 02_analysis.R  主解析（対数変換線形回帰）
+## ---- portable paths (GitHub-ready; NO absolute paths, NO patient data in repo) ----
+## Run this script from the R_code/ directory (e.g. `Rscript 02_analysis.R`).
+## Patient-level data are NOT distributed. To regenerate the .rds files locally,
+## place the source spreadsheet at ./data/データ.xlsx ; both ./data/ and
+## ./figures/ are git-ignored so no patient-level data can be committed.
+data_dir <- "data"; fig_dir <- "figures"
+dir.create(data_dir, showWarnings = FALSE, recursive = TRUE)
+dir.create(fig_dir,  showWarnings = FALSE, recursive = TRUE)
 suppressMessages({library(readxl); library(dplyr); library(car); library(MASS); library(lmtest); library(survival)})
 options(width=200, scipen=6)
-d <- read_excel("C:/Users/Owner/Desktop/LiNGAM解析/データ.xlsx")
+d <- read_excel(file.path(data_dir, "データ.xlsx"))
 names(d) <- c("age","sex","bmi","smk","copd","ip","neoadj","vc","fev1","dlco",
               "tumor","alb","hb","egfr","bs","hba1c","crp","asa","robot","lobectomy",
               "lymph","adhesion","fissure","airleak","vio","sealant","suture","optime","sedation","y")
@@ -51,4 +59,4 @@ cat("\n====== stepAIC (both) ======\n")
 mstep <- stepAIC(mfull, direction="both", trace=FALSE)
 cat("selected:", paste(names(coef(mstep))[-1],collapse=", "),"\n")
 print(round(summary(mstep)$coef,4)); cat("adj R2:",round(summary(mstep)$adj.r.squared,3),"\n")
-saveRDS(d, "C:/Users/Owner/Desktop/LiNGAM解析/R/data_clean.rds")
+saveRDS(d, file.path(data_dir, "data_clean.rds"))

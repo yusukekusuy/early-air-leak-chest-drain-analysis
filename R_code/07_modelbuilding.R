@@ -1,8 +1,16 @@
 ## 07 変数選択過程・適合度・残差診断・候補モデル(補足S3)
+## ---- portable paths (GitHub-ready; NO absolute paths, NO patient data in repo) ----
+## Run this script from the R_code/ directory (e.g. `Rscript 02_analysis.R`).
+## Patient-level data are NOT distributed. To regenerate the .rds files locally,
+## place the source spreadsheet at ./data/データ.xlsx ; both ./data/ and
+## ./figures/ are git-ignored so no patient-level data can be committed.
+data_dir <- "data"; fig_dir <- "figures"
+dir.create(data_dir, showWarnings = FALSE, recursive = TRUE)
+dir.create(fig_dir,  showWarnings = FALSE, recursive = TRUE)
 suppressMessages({library(car); library(MASS); library(lmtest); library(survival)})
 options(width=200, scipen=6)
-d <- readRDS("C:/Users/Owner/Desktop/LiNGAM解析/R/data_clean.rds"); d$ly<-log(d$y)
-outdir <- "C:/Users/Owner/Desktop/LiNGAM解析/figures"
+d <- readRDS(file.path(data_dir, "data_clean.rds")); d$ly<-log(d$y)
+outdir <- fig_dir
 
 jp <- c(age="年齢/age",smk="喫煙指数/smoking",copd="COPD",fev1="FEV1.0%",dlco="DLCO",alb="アルブミン/albumin",
         bmi="BMI",lobectomy="葉切除以上/lobectomy+",robot="ロボット/robot",sealant="シーラント/sealant",

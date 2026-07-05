@@ -1,0 +1,19 @@
+# ---- Never commit patient-level data ----
+# Source spreadsheet and any locally generated data objects
+data/
+*.rds
+*.xlsx
+*.xls
+*.csv
+*.tsv
+*.RData
+*.rda
+
+# Generated figures / tables / intermediate outputs
+figures/
+
+# R session cruft
+.Rhistory
+.RData
+.Rproj.user/
+*.Rproj

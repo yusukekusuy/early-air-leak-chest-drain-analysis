@@ -1,11 +1,19 @@
 ## 10_baseline_wholecohort.R
+## ---- portable paths (GitHub-ready; NO absolute paths, NO patient data in repo) ----
+## Run this script from the R_code/ directory (e.g. `Rscript 02_analysis.R`).
+## Patient-level data are NOT distributed. To regenerate the .rds files locally,
+## place the source spreadsheet at ./data/データ.xlsx ; both ./data/ and
+## ./figures/ are git-ignored so no patient-level data can be committed.
+data_dir <- "data"; fig_dir <- "figures"
+dir.create(data_dir, showWarnings = FALSE, recursive = TRUE)
+dir.create(fig_dir,  showWarnings = FALSE, recursive = TRUE)
 ## 全集団(LiNGAM 第1段階, n=1139)のベースライン比較表
 ## LiNGAM 投入変数(Multimedia Appendix 5 の ✓ セット)を 早期空気漏れ(POD1まで) 有/無 で比較。
 ## 出力: figures/table_baseline_wholecohort.csv, manuscript/_baseline_ja.md, manuscript/_baseline_en.md
 suppressMessages({library(readxl)})
 options(stringsAsFactors=FALSE)
-root <- "C:/Users/Owner/Desktop/LiNGAM解析"
-d <- read_excel(file.path(root,"データ.xlsx"), sheet="全集団")
+root <- "."   # unused; paths below are portable
+d <- read_excel(file.path(data_dir,"データ.xlsx"), sheet="全集団")
 d <- as.data.frame(d)
 grp <- d[["初期リーク（POD1まで）"]]              # 1 = early leak, 0 = no
 stopifnot(all(grp %in% c(0,1)))
@@ -69,7 +77,7 @@ for(s in spec){
 }
 
 ## ---- CSV ----
-write.csv(rows, file.path(root,"figures","table_baseline_wholecohort.csv"), row.names=FALSE, fileEncoding="UTF-8")
+write.csv(rows, file.path(fig_dir,"table_baseline_wholecohort.csv"), row.names=FALSE, fileEncoding="UTF-8")
 
 ## ---- markdown (JA / EN) ----
 mk <- function(lang){
@@ -85,6 +93,6 @@ mk <- function(lang){
     out <- c(out, sprintf("| %s | %s | %s | %s | %s |", lab[i], rows$all[i], rows$no[i], rows$yes[i], rows$P[i]))
   out
 }
-writeLines(mk("ja"), file.path(root,"manuscript","_baseline_ja.md"), useBytes=TRUE)
-writeLines(mk("en"), file.path(root,"manuscript","_baseline_en.md"), useBytes=TRUE)
+writeLines(mk("ja"), file.path(fig_dir,"_baseline_ja.md"), useBytes=TRUE)
+writeLines(mk("en"), file.path(fig_dir,"_baseline_en.md"), useBytes=TRUE)
 cat("DONE: baseline whole-cohort table written.\n")

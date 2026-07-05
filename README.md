@@ -1,49 +1,64 @@
-# Reproducible analysis — prolonged chest-drain duration after lung resection
+# Reproducible analysis — prolonged chest-drain duration after lung resection (R component)
 
 R code reproducing all statistical results reported in the manuscript
-("Who keeps the chest drain after an early air leak? Determinants of prolonged chest-tube duration following pulmonary resection"). All **reported analyses**
-are in R; figure/graph rendering of the LiNGAM causal map is done separately (Python,
-not required to reproduce the numbers).
+("Determinants of Prolonged Chest-Tube Duration After Early Air Leak Following
+Pulmonary Resection: A Single-Center Observational Study Using LiNGAM and
+Log-Transformed Regression"). All **reported analyses** are in R; figure/graph
+rendering of the LiNGAM causal map is done separately (Python, not required to
+reproduce the numbers).
 
-## Data
+## Data availability (important)
+- **No patient-level data are distributed in this repository.** The dataset contains
+  sensitive patient information and cannot be shared publicly.
+- The analysis reads a source spreadsheet expected at **`./data/データ.xlsx`**
+  (sheet `Sheet2`: early-air-leak cohort, n = 556, Phase 2; sheet `全集団`: whole
+  cohort, n = 1139, Phase 1, LiNGAM). Outcome `y` = days to chest-drain removal.
+- The intermediate files `data/data_clean.rds` and `data/data_risk.rds` are
+  **generated locally** by the scripts below; they are **not** committed (see
+  `.gitignore`). Anyone with authorized access to the source data can regenerate
+  them by placing `データ.xlsx` in `./data/` and running the scripts in order.
+- **Upstream steps are not reproduced here.** Missing covariates were completed by
+  multiple imputation (MICE) and the intraoperative findings were extracted from
+  free-text operative notes with a large language model (GPT-5.4, Azure OpenAI
+  Service, version 2026-03-05). Both were performed inside the institutional data
+  environment and are outside this repository, which reproduces the analyses from
+  the completed dataset. Per-variable source missingness (pre-imputation) is in
+  Multimedia Appendix 1.
 
-- `../データ.xlsx` — sheet `Sheet2`: early-air-leak cohort, n = 556 (Phase 2); sheet
-  `全集団`: whole cohort, n = 1139 (Phase 1, LiNGAM). Outcome `y` = days to
-  chest-drain removal. Missing covariates were completed by MICE upstream; the file has
-  no missing values. Per-variable missingness (pre-imputation) is in Multimedia Appendix 1.
+## Paths
+- Scripts use **relative paths only** (`./data/` for inputs/intermediate `.rds`,
+  `./figures/` for outputs) and no absolute paths. Run each script **from this
+  `R_code/` directory**. Both `data/` and `figures/` are created automatically and
+  are git-ignored.
 
 ## Environment
-
 - R 4.5.0. Packages: `readxl, dplyr, car, MASS, lmtest, survival, survminer, pROC, ggplot2`.
-- On this machine Rscript is at `C:\Program Files\R\R-4.5.0\bin\Rscript.exe`.
+- Run with `Rscript <script>.R` (ensure `Rscript` is on your PATH).
 
 ## Scripts (run in order)
-
 | Script | Purpose | Reproduces |
 |---|---|---|
 | `01_explore.R` | Distribution, missingness, skewness of `y` (skew 4.03 → 0.24 after log) | Results 3.2 |
-| `02_analysis.R` | Reads xlsx, builds `data_clean.rds`; log-OLS = lognormal-AFT check; univariate (per-SD) | Multimedia Appendix 3; Methods |
-| `03_final_risk.R` | Cutoff/risk-factor exploration (superseded by 05) | — |
-| `04_figures_tables.R` | Early figure/table drafts (superseded by 05) | — |
-| `05_final.R` | **Final 6-factor model (binary clinical cutoffs), coefficient-weighted risk-points score, 3-group strata (tertiles), KM (Fig 5), box plot (Fig 6)** | Table 2; Results; Figs 5–6; `data_risk.rds` |
+| `02_analysis.R` | Reads xlsx, builds `data/data_clean.rds`; log-OLS = lognormal-AFT check; univariate (per-SD) | Multimedia Appendix 1; Methods |
+| `05_final.R` | **Final 6-factor model (binary clinical cutoffs), coefficient-weighted risk-points score, 3-group strata (tertiles), KM (Fig 5), box plot (Fig 6)** | Table 2; Results; Figs 5–6; `data/data_risk.rds` |
 | `06_univariate_table.R` | Univariate table, all variables | Multimedia Appendix 3 |
-| `07_modelbuilding.R` | Candidate model + VIF + AIC (converges on the pre-specified factors); final binary-cutoff model diagnostics (BP, VIF, AFT-equivalence), joint F test (FEV1.0%<70+DLCO<80), integer-point weighting, sensitivity analyses | Multimedia Appendix 4; Results |
+| `07_modelbuilding.R` | Candidate model + VIF + AIC-based stepwise selection (converges on the pre-specified factors); final binary-cutoff model diagnostics (BP, VIF, AFT-equivalence), joint F test (FEV1.0%<70+DLCO<80), integer-point weighting, sensitivity analyses | Multimedia Appendix 4; Results |
 | `08_flowchart.R` | Study-flow diagram (Fig 1) | Fig 1 |
 | `09_pipeline_figure.R` | Pipeline schematic (Fig 2) — figure only | Fig 2 |
 | `10_baseline_wholecohort.R` | Whole-cohort (n=1139) baseline of LiNGAM variables, compared by early-air-leak status (Wilcoxon/chi-square) | Multimedia Appendix 7 |
 
 Note: `01`–`08` are the reproducibility core. `09` (pipeline schematic) and the LiNGAM
 causal-graph rendering are figures, not part of the numerical reproduction.
+(Scripts `03`/`04` were exploratory drafts, superseded by `05`, and are not distributed.)
 
 ## Reproduce the reported numbers
-
 ```sh
-Rscript 02_analysis.R   # creates data_clean.rds; prints univariate + AFT-equivalence
-Rscript 07_modelbuilding.R   # candidate model, AIC, final-model diagnostics, joint F, sensitivity
-Rscript 05_final.R      # Table 2 model, weighted risk-points score, 3-group strata, Figs 5–6
+# from this R_code/ directory, with ./data/データ.xlsx in place
+Rscript 02_analysis.R        # creates data/data_clean.rds; prints univariate + AFT-equivalence
+Rscript 07_modelbuilding.R   # candidate model, AIC-based stepwise, final-model diagnostics, joint F, sensitivity
+Rscript 05_final.R           # Table 2 model, weighted risk-points score, 3-group strata, Figs 5–6
 Rscript 06_univariate_table.R
 ```
-
 Key reported values regenerated: Table 2 ratios/CIs/P (binary clinical-cutoff factors);
 adj R² 0.112, AIC 1204.8, F 12.7 (6,549); joint F (FEV1.0%<70+DLCO<80) P = .04;
 Breusch–Pagan P = .13; max VIF 1.11; sensitivity (COPD-replacement) adj R² 0.117;
@@ -52,10 +67,10 @@ Spearman ρ 0.35; 3-group strata by score tertiles n = 210/180/166, median 2/3/4
 log-rank/Kruskal–Wallis P < .001.
 
 ## Notes on method (reproducibility-relevant)
-
 - The multivariable model is **pre-specified** (established air-leak risk factors + LiNGAM
-  causal pathway + clinical relevance), reported as confirmatory; AIC/stepwise (in `07`) is a
-  supporting analysis that converges on the same factors, not the selection mechanism.
+  causal pathway + clinical relevance), reported as confirmatory; the AIC-based stepwise
+  analysis (`direction="both"` in `07`) is a supporting analysis that converges on the same
+  factors, not the selection mechanism.
 - The bedside model enters the continuous determinants at **pre-specified clinical cutoffs**
   (FEV1.0% <70%, DLCO <80%, Alb <3.8 g/dL), not data-derived, so the model is consistent with
   the bedside score. The continuous-form LiNGAM causal map (Python) is unaffected.
@@ -65,6 +80,7 @@ log-rank/Kruskal–Wallis P < .001.
 - The weighted-score stratification and the KM/box-plot displays are **descriptive risk
   stratification**, not a cross-validated or externally validated prediction model; a formal
   prediction model with external/temporal validation is future work.
+
 
 ---
 

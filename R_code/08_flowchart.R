@@ -1,5 +1,13 @@
 ## 08 inclusion/exclusion flowchart (CONSORT-style, side branches)
-outdir <- "C:/Users/Owner/Desktop/LiNGAM解析/figures"
+## ---- portable paths (GitHub-ready; NO absolute paths, NO patient data in repo) ----
+## Run this script from the R_code/ directory (e.g. `Rscript 02_analysis.R`).
+## Patient-level data are NOT distributed. To regenerate the .rds files locally,
+## place the source spreadsheet at ./data/データ.xlsx ; both ./data/ and
+## ./figures/ are git-ignored so no patient-level data can be committed.
+data_dir <- "data"; fig_dir <- "figures"
+dir.create(data_dir, showWarnings = FALSE, recursive = TRUE)
+dir.create(fig_dir,  showWarnings = FALSE, recursive = TRUE)
+outdir <- fig_dir
 png(file.path(outdir,"fig_flow.png"), width=2300, height=1620, res=210)
 par(mar=c(0,0,0,0)); plot(0,0,type="n",xlim=c(0,100),ylim=c(8,98),axes=FALSE,xlab="",ylab="")
 box2<-function(x,y,w,h,txt,cex=1.18){

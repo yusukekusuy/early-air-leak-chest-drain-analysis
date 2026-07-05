@@ -1,8 +1,16 @@
 ## 01_explore.R  データ把握
+## ---- portable paths (GitHub-ready; NO absolute paths, NO patient data in repo) ----
+## Run this script from the R_code/ directory (e.g. `Rscript 02_analysis.R`).
+## Patient-level data are NOT distributed. To regenerate the .rds files locally,
+## place the source spreadsheet at ./data/データ.xlsx ; both ./data/ and
+## ./figures/ are git-ignored so no patient-level data can be committed.
+data_dir <- "data"; fig_dir <- "figures"
+dir.create(data_dir, showWarnings = FALSE, recursive = TRUE)
+dir.create(fig_dir,  showWarnings = FALSE, recursive = TRUE)
 suppressMessages({library(readxl); library(dplyr)})
 skewness <- function(x){x<-x[!is.na(x)];m<-mean(x);mean((x-m)^3)/(mean((x-m)^2)^1.5)}
 options(width=200)
-d <- read_excel("C:/Users/Owner/Desktop/LiNGAM解析/データ.xlsx")
+d <- read_excel(file.path(data_dir, "データ.xlsx"))
 cat("N =", nrow(d), " cols =", ncol(d), "\n")
 names(d)
 cat("\n--- air_leak table ---\n"); print(table(d$`術中所見_air_leak`, useNA="always"))

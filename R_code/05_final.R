@@ -1,4 +1,12 @@
 ## 05_final.R  CANONICAL final analysis for Manuscript_English.docx / Supplement_English.docx.
+## ---- portable paths (GitHub-ready; NO absolute paths, NO patient data in repo) ----
+## Run this script from the R_code/ directory (e.g. `Rscript 02_analysis.R`).
+## Patient-level data are NOT distributed. To regenerate the .rds files locally,
+## place the source spreadsheet at ./data/データ.xlsx ; both ./data/ and
+## ./figures/ are git-ignored so no patient-level data can be committed.
+data_dir <- "data"; fig_dir <- "figures"
+dir.create(data_dir, showWarnings = FALSE, recursive = TRUE)
+dir.create(fig_dir,  showWarnings = FALSE, recursive = TRUE)
 ## Final 6-factor model (operative time excluded as a mediator; COPD label replaced by
 ## measured FEV1.0% + DLCO). Weighted integer risk points, and 3-group risk strata by
 ## TERTILES of the weighted score (Low 0-5 / Intermediate 6-9 / High >=10).
@@ -6,8 +14,8 @@
 ## distribution), Fig 5 (composite KM), Fig 6 (box plot), and the per-factor KM panel.
 suppressMessages({library(dplyr); library(survival); library(survminer); library(pROC)})
 options(width=200, scipen=6)
-outdir <- "C:/Users/Owner/Desktop/LiNGAM解析/figures"
-d <- readRDS("C:/Users/Owner/Desktop/LiNGAM解析/R/data_clean.rds")
+outdir <- fig_dir
+d <- readRDS(file.path(data_dir, "data_clean.rds"))
 d$ly <- log(d$y); d$prolong <- as.integer(d$y>=7)
 
 ## ---- 6 pre-specified clinical-cutoff risk factors ----
@@ -119,7 +127,7 @@ pb<-ggplot(d,aes(risk3,y,fill=risk3,color=risk3))+
   theme(axis.text.x=element_text(face="bold"))
 ggsave(file.path(outdir,"fig_box_risk.png"),pb,width=6.6,height=5.4,dpi=210)
 
-## ---- per-factor KM panel (Multimedia Appendix 6) ----
+## ---- per-factor KM panel (Multimedia Appendix 9) ----
 ## AMA/JMIR style P-value label: italic P, no leading zero, <.001
 lab_p<-function(p){
   if(p<.001) return(bquote(italic(P) ~ "<" ~ ".001"))
@@ -157,4 +165,4 @@ legend("topright", sprintf("Median = %d days",median(d$y)), col="red", lty=2, lw
 dev.off()
 
 cat("\nDONE. figures+tables updated.\n")
-saveRDS(d,"C:/Users/Owner/Desktop/LiNGAM解析/R/data_risk.rds")
+saveRDS(d,file.path(data_dir, "data_risk.rds"))
